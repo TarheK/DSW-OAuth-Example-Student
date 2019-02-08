@@ -16,12 +16,13 @@ app.debug = True #Change this to False for production
 
 app.secret_key = os.environ['SECRET_KEY'] 
 oauth = OAuth(app)
+oauth.init_app(app)
 
 
 github = oauth.remote_app(
     'github',
-    consumer_key=os.environ['GITHUB_CLIENT_ID'], 
-    consumer_secret=os.environ['GITHUB_CLIENT_SECRET'],
+    consumer_key=os.environ['GITHUB_CLIENT_ID'], #the webapp's "username" for github's OAuth
+    consumer_secret=os.environ['GITHUB_CLIENT_SECRET'], #the webapp's "password"
     request_token_params={'scope': 'user:email'}, #request read-only access to the user's email.  For a list of possible scopes, see developer.github.com/apps/building-oauth-apps/scopes-for-oauth-apps
     base_url='https://api.github.com/',
     request_token_url=None,
@@ -33,7 +34,8 @@ github = oauth.remote_app(
 
 @app.context_processor
 def inject_logged_in():
-    return {"logged_in":('github_token' in session)}
+    return {"logg
+            ed_in":('github_token' in session)}
 
 @app.route('/')
 def home():
@@ -48,7 +50,7 @@ def logout():
     session.clear()
     return render_template('message.html', message='You were logged out')
 
-@app.route()#the route should match the callback URL registered with the OAuth provider
+@app.route('/login/authorized')#the route should match the callback URL registered with the OAuth provider
 def authorized():
     resp = github.authorized_response()
     if resp is None:
@@ -57,8 +59,13 @@ def authorized():
     else:
         try:
             #save user data and set log in message
-        except:
+            session['github_token'] = (resp['access_token', '') #save the token to prove that the usser's logged in
+            session['user_data'] = github.get('user').data
+            message= 'You were successfully loged in as ' + session['user-data']['login']
+        except Exception as inst:
             #clear the session and give error message
+            session.clear()
+            message='unable to login. please try again later.'
     return render_template('message.html', message=message)
 
 
