@@ -78,13 +78,7 @@ def renderPage1():
 
 @app.route('/page2')
 def renderPage2():
-     if 'user_data' in session:
-        user_data_pprint = pprint.pformat(session['user_data'])#format the user data nicely
-    else:
-        user_data_pprint = '';
-    return render_template('page2.html',dump_user_data=user_data_pprint)
-
-
+    return page 2
 @github.tokengetter
 def get_github_oauth_token():
     return session.get('github_token')
