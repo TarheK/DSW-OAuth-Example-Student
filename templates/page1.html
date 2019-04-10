@@ -3,12 +3,21 @@
 {% block title %}page1{% endblock %}
 
 {% block content %}
-  <h1>This is Page 1</h1>
+	
+	{% with message = get_flashed_messages() %}
+		{% if messages %}
+			<ul class=flashes>
+			{% for message in messages %}
+				<li>{{ messages }}<li/>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+	<h1>This is Page 1</h1>
 
-<p>Lorem ipsum sit dolor amet.</p>
+     <p>User data</p>
 
-<pre>
-{{ dump_user_data }}
-</pre>
-
+	<pre>
+		{{ dump_user_data }}
+	</pre>
 {% endblock %}

@@ -42,7 +42,7 @@ def home():
 
 @app.route('/login')
 def login():   
-    return github.authorize(callback=url_for('authorized', _external=True, _scheme='https'))
+    return github.authorize(callback=url_for('authorized', _external=True, _scheme='http'))
 
 @app.route('/logout')
 def logout():
@@ -60,12 +60,13 @@ def authorized():
             #save user data and set log in message
             session['github_token'] = (resp['access_token'], '') #save the token to prove that the usser's logged in
             session['user_data'] = github.get('user').data
-            message= 'You were successfully loged in as ' + session['user_data']['login']
+            flash("You were succesfully logged in")
         except Exception as inst:
             #clear the session and give error message
             session.clear()
-            message='unable to login. please try again later.'
-    return render_template('message.html', message=message)
+            flash("You were succesfully logged in")
+            
+    return redirect(url_for("renderPage1"))
 
 
 @app.route('/page1')
@@ -78,7 +79,7 @@ def renderPage1():
 
 @app.route('/page2')
 def renderPage2():
-    return page 2
+    return render_template('page2.html')  
 @github.tokengetter
 def get_github_oauth_token():
     return session.get('github_token')
